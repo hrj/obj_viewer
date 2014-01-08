@@ -25,8 +25,11 @@
 #include <cmath>
 
 #define KEY_ESCAPE 27
+#define KEY_SPACE  32
 #define KEY_PLUS   43
+#define KEY_COMMA  44
 #define KEY_MINUS  45
+#define KEY_DOT    46
 #define KEY_W      119
 #define KEY_S      115
 #define KEY_A      97
@@ -284,7 +287,9 @@ void Model_OBJ::Draw()
  ***************************************************************************/
 
 Model_OBJ obj;
-static float g_rotation = 0.2;
+static float g_rotation = 0.0;
+static float g_rotationSpeed = 0.1;
+static bool g_autoRotate = true;
 static float g_scale = 1.0;
 static float g_deltaY = 0.0;
 static float g_deltaX = 0.0;
@@ -306,7 +311,9 @@ void display()
   gluLookAt( 0,1,4 - g_scale, 0,0,0, 0,1,0);
   glTranslatef(g_deltaX, g_deltaY, 0);
   glRotatef(g_rotation,0,1,0);
-  g_rotation += 0.1;
+  if (g_autoRotate) {
+    g_rotation += g_rotationSpeed;
+  }
   obj.Draw();
 
   glutSwapBuffers();
@@ -381,6 +388,17 @@ void keyboard ( unsigned char key, int x, int y )
       break;
     case KEY_A:
       g_deltaX += 0.01;
+      break;
+    case KEY_SPACE:
+      g_autoRotate = !g_autoRotate;
+      break;
+    case KEY_COMMA:
+      g_rotationSpeed -= 0.1;
+      g_autoRotate = true;
+      break;
+    case KEY_DOT:
+      g_rotationSpeed += 0.1;
+      g_autoRotate = true;
       break;
     default:
       printf("Key: %d\n", key);
