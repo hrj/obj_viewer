@@ -42,6 +42,9 @@
 #define KEY_COMMA  44
 #define KEY_MINUS  45
 #define KEY_DOT    46
+#define KEY_ONE    49
+#define KEY_TWO    50
+#define KEY_THREE  51
 #define KEY_W      119
 #define KEY_S      115
 #define KEY_A      97
@@ -284,6 +287,7 @@ int Model_OBJ::Load(char* filename)
 
 void Model_OBJ::init() {
 #if USE_VBO
+  printf("Using VBO\n");
   glGenBuffers(1, &triangleVBO);
   glBindBuffer(GL_ARRAY_BUFFER, triangleVBO);
 
@@ -343,6 +347,10 @@ static bool g_autoRotate = true;
 static float g_deltaY = 0.0;
 static float g_deltaX = 0.0;
 
+static bool g_light0 = true;
+static bool g_light1 = false;
+static bool g_light2 = false;
+
 #if SHOW_FPS
 static long g_frame = 0;
 static long g_timebase = 0;
@@ -389,6 +397,39 @@ void display()
 #endif
 }
 
+void setupLight0() {
+  glEnable(GL_LIGHT0);
+  GLfloat ambient[] = { 0.01, 0.01, 0.01, 1.0 };
+  GLfloat diffuse[] = { 0.8, 0.8, 0.8, 1 };
+  GLfloat specular[] = { 0.0, 0.0, 0.0, 1 };
+  GLfloat position[] = { 4.0, 0.0, 0, 1.0 };
+  glLightfv( GL_LIGHT0, GL_AMBIENT, ambient );
+  glLightfv( GL_LIGHT0, GL_DIFFUSE, diffuse );
+  glLightfv( GL_LIGHT0, GL_SPECULAR, specular );
+  glLightfv( GL_LIGHT0, GL_POSITION, position );
+}
+
+void setupLight1() {
+  GLfloat ambient[] = { 0.01, 0.01, 0.01, 1.0 };
+  GLfloat diffuse[] = { 0.1, 0.1, 0.2, 1 };
+  GLfloat specular[] = { 0.0, 0.0, 0.0, 1 };
+  GLfloat position[] = { 0, 4.0, 0, 1.0 };
+  glLightfv( GL_LIGHT1, GL_AMBIENT, ambient );
+  glLightfv( GL_LIGHT1, GL_DIFFUSE, diffuse );
+  glLightfv( GL_LIGHT1, GL_SPECULAR, specular );
+  glLightfv( GL_LIGHT1, GL_POSITION, position );
+}
+
+void setupLight2() {
+  GLfloat ambient[] = { 0.01, 0.01, 0.01, 1.0 };
+  GLfloat diffuse[] = { 0.2, 0.1, 0.1, 1 };
+  GLfloat specular[] = { 0.0, 0.0, 0.0, 1 };
+  GLfloat position[] = { 0.0, -4.0, 0, 1.0 };
+  glLightfv( GL_LIGHT2, GL_AMBIENT, ambient );
+  glLightfv( GL_LIGHT2, GL_DIFFUSE, diffuse );
+  glLightfv( GL_LIGHT2, GL_SPECULAR, specular );
+  glLightfv( GL_LIGHT2, GL_POSITION, position );
+}
 
 void initialize ()
 {
@@ -397,15 +438,9 @@ void initialize ()
   GLfloat amb_light[] = { 0.01, 0.01, 0.02, 1.0 };
   glLightModelfv( GL_LIGHT_MODEL_AMBIENT, amb_light );
 
-  glEnable(GL_LIGHT0);
-  GLfloat ambient[] = { 0.01, 0.01, 0.01, 1.0 };
-  GLfloat diffuse[] = { 0.9, 0.9, 0.9, 1 };
-  GLfloat specular[] = { 0.1, 0.0, 0.0, 1 };
-  GLfloat position[] = { 4.0, 0.0, 0, 1.0 };
-  glLightfv( GL_LIGHT0, GL_AMBIENT, ambient );
-  glLightfv( GL_LIGHT0, GL_DIFFUSE, diffuse );
-  glLightfv( GL_LIGHT0, GL_SPECULAR, specular );
-  glLightfv( GL_LIGHT0, GL_POSITION, position );
+  setupLight0();
+  setupLight1();
+  setupLight2();
 
   glShadeModel( GL_SMOOTH );
   glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
@@ -464,6 +499,30 @@ void keyboard ( unsigned char key, int x, int y )
     case KEY_DOT:
       g_rotationSpeed -= 0.1;
       g_autoRotate = true;
+      break;
+    case KEY_ONE:
+      g_light0 = !g_light0;
+      if (g_light0) {
+        glEnable(GL_LIGHT0);
+      } else {
+        glDisable(GL_LIGHT0);
+      }
+      break;
+    case KEY_TWO:
+      g_light1 = !g_light1;
+      if (g_light1) {
+        glEnable(GL_LIGHT1);
+      } else {
+        glDisable(GL_LIGHT1);
+      }
+      break;
+    case KEY_THREE:
+      g_light2 = !g_light2;
+      if (g_light2) {
+        glEnable(GL_LIGHT2);
+      } else {
+        glDisable(GL_LIGHT2);
+      }
       break;
     default:
       printf("Key: %d\n", key);
