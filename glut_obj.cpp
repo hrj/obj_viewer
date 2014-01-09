@@ -11,6 +11,7 @@
 
 #define USE_VBO   (1)
 #define SHOW_FPS  (0)
+#define ANTIALIAS (1)
 
 #include <iostream>
 #include <fstream>
@@ -461,6 +462,10 @@ void initialize ()
   glEnable( GL_DEPTH_TEST );
   glEnable(GL_CULL_FACE);
 
+#if ANTIALIAS
+  glEnable(GL_MULTISAMPLE_ARB);
+#endif
+
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
   gluLookAt( 0,1,4, 0,0,0, 0,1,0);
@@ -553,7 +558,7 @@ int main(int argc, char **argv)
 
   // initialize and run program
   glutInit(&argc, argv);                                      // GLUT initialization
-  glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH );  // Display Mode
+  glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | (ANTIALIAS ? GLUT_MULTISAMPLE : 0) );  // Display Mode
   glutInitWindowSize(win.width,win.height);         // set window size
   glutCreateWindow(win.title);                // create Window
   glutDisplayFunc(display);                 // register Display Function

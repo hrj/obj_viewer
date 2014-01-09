@@ -22,6 +22,12 @@ On the down side: can load only simple meshes with triangular faces. Materials a
 | `SPACE` | Toggle autorotation |
 | `,` , `.` | Increase rotation speed towards left / right |
 
+
+### Compile time configuration
+* VBOs (default = enabled)
+* Antialiasing (default = enabled)
+* FPS counter (default = disabled)
+
 ### Other similar software
 Just my luck! After implementing this project, I found other similar projects.
 
