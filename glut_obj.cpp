@@ -288,9 +288,8 @@ void Model_OBJ::Draw()
 
 Model_OBJ obj;
 static float g_rotation = 0.0;
-static float g_rotationSpeed = 0.1;
+static float g_rotationSpeed = -0.1;
 static bool g_autoRotate = true;
-static float g_scale = 1.0;
 static float g_deltaY = 0.0;
 static float g_deltaX = 0.0;
 glutWindow win;
@@ -305,10 +304,16 @@ void printError(const char *msg) {
 void display()
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  glMatrixMode(GL_PROJECTION);
+  GLfloat aspect = (GLfloat) win.width / win.height;
+  glLoadIdentity();
+  gluPerspective(win.field_of_view_angle, aspect, win.z_near, win.z_far);
+
   glMatrixMode(GL_MODELVIEW);
 
   glLoadIdentity();
-  gluLookAt( 0,1,4 - g_scale, 0,0,0, 0,1,0);
+  gluLookAt( 0,0,4, 0,0,0, 0,-1,0);
   glTranslatef(g_deltaX, g_deltaY, 0);
   glRotatef(g_rotation,0,1,0);
   if (g_autoRotate) {
@@ -323,11 +328,6 @@ void display()
 void initialize ()
 {
   glViewport(0, 0, win.width, win.height);
-  glMatrixMode(GL_PROJECTION);
-  GLfloat aspect = (GLfloat) win.width / win.height;
-  glLoadIdentity();
-  gluPerspective(win.field_of_view_angle, aspect, win.z_near, win.z_far);
-
   glEnable(GL_LIGHTING);
   GLfloat amb_light[] = { 0.01, 0.01, 0.02, 1.0 };
   glLightModelfv( GL_LIGHT_MODEL_AMBIENT, amb_light );
@@ -372,32 +372,32 @@ void keyboard ( unsigned char key, int x, int y )
       exit ( 0 );
       break;
     case KEY_PLUS:
-      g_scale += 0.1;
+      win.field_of_view_angle -= 0.4;
       break;
     case KEY_MINUS:
-      g_scale -= 0.1;
+      win.field_of_view_angle += 0.4;
       break;
     case KEY_W:
-      g_deltaY -= 0.01;
-      break;
-    case KEY_S:
       g_deltaY += 0.01;
       break;
+    case KEY_S:
+      g_deltaY -= 0.01;
+      break;
     case KEY_D:
-      g_deltaX -= 0.01;
+      g_deltaX += 0.01;
       break;
     case KEY_A:
-      g_deltaX += 0.01;
+      g_deltaX -= 0.01;
       break;
     case KEY_SPACE:
       g_autoRotate = !g_autoRotate;
       break;
     case KEY_COMMA:
-      g_rotationSpeed -= 0.1;
+      g_rotationSpeed += 0.1;
       g_autoRotate = true;
       break;
     case KEY_DOT:
-      g_rotationSpeed += 0.1;
+      g_rotationSpeed -= 0.1;
       g_autoRotate = true;
       break;
     default:
