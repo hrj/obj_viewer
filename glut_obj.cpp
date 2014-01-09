@@ -45,6 +45,8 @@
 #define KEY_ONE    49
 #define KEY_TWO    50
 #define KEY_THREE  51
+#define KEY_CAP_W  87
+#define KEY_CAP_S  83
 #define KEY_W      119
 #define KEY_S      115
 #define KEY_A      97
@@ -346,6 +348,7 @@ static float g_rotationSpeed = -0.1;
 static bool g_autoRotate = true;
 static float g_deltaY = 0.0;
 static float g_deltaX = 0.0;
+static float g_deltaZ = 0.0;
 
 static bool g_light0 = true;
 static bool g_light1 = false;
@@ -371,7 +374,7 @@ void display()
 
   glLoadIdentity();
   gluLookAt( 0,0,4, 0,0,0, 0,-1,0);
-  glTranslatef(g_deltaX, g_deltaY, 0);
+  glTranslatef(g_deltaX, g_deltaY, g_deltaZ);
   glRotatef(g_rotation,0,1,0);
   if (g_autoRotate) {
     g_rotation += g_rotationSpeed;
@@ -488,6 +491,12 @@ void keyboard ( unsigned char key, int x, int y )
       break;
     case KEY_A:
       g_deltaX -= 0.01;
+      break;
+    case KEY_CAP_W:
+      g_deltaZ += 0.05;
+      break;
+    case KEY_CAP_S:
+      g_deltaZ -= 0.05;
       break;
     case KEY_SPACE:
       g_autoRotate = !g_autoRotate;
