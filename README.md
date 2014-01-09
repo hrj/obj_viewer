@@ -7,6 +7,7 @@ Simple .obj viewer based on code from an [old project](http://openglsamples.sour
 | `w`, `s` | Pan Up, Down |
 | `a`, `d` | Pan Left, Right |
 | `+`, `-` | Zoom in / out |
+| `W`, `S` | Move in / out |
 | `1`, `2`, `3` | Toggle Lights One, Two Or Three respectively. Light One is enabled by default. |
 | `SPACE` | Toggle autorotation |
 | `,` , `.` | Increase rotation speed towards left / right |
