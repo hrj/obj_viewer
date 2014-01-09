@@ -9,7 +9,7 @@
  *
  */
 
-#define USE_VBO   (0)
+#define USE_VBO   (1)
 #define SHOW_FPS  (0)
 
 #include <iostream>
