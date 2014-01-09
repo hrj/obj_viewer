@@ -2,16 +2,14 @@ Simple .obj viewer based on code from an [old project](http://openglsamples.sour
 
 ### Keyboard shortcuts
 
-| `w` | Pan Up |
-| `s` | Pan Down |
-| `a` | Pan Left |
-| `d` | Pan Right |
-| `+` | Zoom in |
-| `-` | Zoom out |
+| Key | Action|
+|-----|-------|
+| `w`, `s` | Pan Up, Down |
+| `a`, `d` | Pan Left, Right |
+| `+`, `-` | Zoom in / out |
 | `1`, `2`, `3` | Toggle Lights One, Two Or Three respectively. Light One is enabled by default. |
 | `SPACE` | Toggle autorotation |
-| `,` | Increase rotation speed towards left |
-| `.` | Increase rotation speed towards right |
+| `,` , `.` | Increase rotation speed towards left / right |
 
 ### Other similar software
 Just my luck! After implementing this project, I found other similar projects.
