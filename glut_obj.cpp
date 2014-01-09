@@ -10,6 +10,7 @@
  */
 
 #define USE_VBO   (0)
+#define SHOW_FPS  (0)
 
 #include <iostream>
 #include <fstream>
@@ -341,6 +342,12 @@ static float g_rotationSpeed = -0.1;
 static bool g_autoRotate = true;
 static float g_deltaY = 0.0;
 static float g_deltaX = 0.0;
+
+#if SHOW_FPS
+static long g_frame = 0;
+static long g_timebase = 0;
+#endif
+
 glutWindow win;
 
 void display()
@@ -364,6 +371,22 @@ void display()
   obj.Draw();
 
   glutSwapBuffers();
+
+#if SHOW_FPS
+  //calculate the frames per second
+  g_frame++;
+
+  //get the current time
+  long currenttime = glutGet(GLUT_ELAPSED_TIME);
+
+  //check if a second has passed
+  if (currenttime - g_timebase > 1000) 
+  {
+    printf("FPS: %4.2f\n",  g_frame*1000.0/(currenttime-g_timebase));
+    g_timebase = currenttime;   
+    g_frame = 0;
+  }
+#endif
 }
 
 
