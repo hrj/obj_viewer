@@ -1,4 +1,14 @@
+### About
 Simple .obj viewer based on code from an [old project](http://openglsamples.sourceforge.net/projects/index.php/blog/index/)
+
+#### Features
+
+* Easy to compile with very few dependencies.
+* Ability to zoom / pan view
+* Multiple lights that can be toggled on/off
+* Uses VBOs for faster rendering
+
+On the down side: can load only simple meshes with triangular faces. Materials are ignored.
 
 ### Keyboard shortcuts
 
