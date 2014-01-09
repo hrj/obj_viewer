@@ -9,14 +9,25 @@
  *
  */
 
+#define USE_VBO   (0)
+
 #include <iostream>
 #include <fstream>
 #include <stdio.h>
 #include <malloc.h>
 #include <string.h>
+
+#if USE_VBO
+#define GL_GLEXT_PROTOTYPES
+#endif
+
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
+#if USE_VBO
+#include <GL/glext.h>
+#endif
+
 #include <iostream>
 #include <sstream>
 #include <fstream>
@@ -50,6 +61,13 @@ typedef struct {
 } glutWindow;
 
 
+void printError(const char *msg) {
+  int err = glGetError();
+  if (err != GL_NO_ERROR) {
+    printf("%s: %d\n", msg, err);
+  }
+}
+
 /* OBJ Loading */
 
 class Model_OBJ
@@ -57,10 +75,16 @@ class Model_OBJ
   private:
     int id;
 
+#if USE_VBO
+    GLuint  triangleVBO;
+    GLuint  normalVBO;
+#endif
+
   public:
     Model_OBJ();
     float* calculateNormal(float* coord1,float* coord2,float* coord3 );
     int Load(char *filename); // Loads the model
+    void init(); // Init after Opengl Initialized
     void Draw();          // Draws the model on the screen
     void Release();       // Release the model
 
@@ -69,7 +93,6 @@ class Model_OBJ
     float* vertexBuffer;          // Stores the points which make the object
     long TotalConnectedPoints;        // Stores the total number of connected verteces
     long TotalConnectedTriangles;     // Stores the total number of connected triangles
-
 };
 
 
@@ -249,12 +272,31 @@ int Model_OBJ::Load(char* filename)
       }
     }
     objFile.close();                            // Close OBJ file
+    printf("Finished obj load\n");
   }
   else
   {
     cout << "Unable to open file" << endl;
   }
   return 0;
+}
+
+void Model_OBJ::init() {
+#if USE_VBO
+  glGenBuffers(1, &triangleVBO);
+  glBindBuffer(GL_ARRAY_BUFFER, triangleVBO);
+
+  // Upload vertex data to the video device
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float)*TotalConnectedTriangles, Faces_Triangles, GL_STATIC_DRAW);
+
+  glGenBuffers(1, &normalVBO);
+  glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
+
+  // Upload Normal data to the video device
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float)*TotalConnectedTriangles, normals, GL_STATIC_DRAW);
+
+  printError("After obj init.");
+#endif
 }
 
 void Model_OBJ::Release()
@@ -271,8 +313,15 @@ void Model_OBJ::Draw()
   if (lastDrawnId != id) {
     glEnableClientState(GL_VERTEX_ARRAY);           // Enable vertex arrays
     glEnableClientState(GL_NORMAL_ARRAY);           // Enable normal arrays
+#if USE_VBO
+    glBindBuffer(GL_ARRAY_BUFFER, triangleVBO);         // Setup VBO
+    glVertexPointer(3,GL_FLOAT, 0, NULL);
+    glBindBuffer(GL_ARRAY_BUFFER, normalVBO);         // Setup VBO
+    glNormalPointer(GL_FLOAT, 0, NULL);
+#else
     glVertexPointer(3,GL_FLOAT, 0,Faces_Triangles);       // Vertex Pointer to triangle array
     glNormalPointer(GL_FLOAT, 0, normals);            // Normal pointer to normal array
+#endif
   }
 
   glDrawArrays(GL_TRIANGLES, 0, TotalConnectedTriangles);   // Draw the triangles
@@ -293,13 +342,6 @@ static bool g_autoRotate = true;
 static float g_deltaY = 0.0;
 static float g_deltaX = 0.0;
 glutWindow win;
-
-void printError(const char *msg) {
-  int err = glGetError();
-  if (err != GL_NO_ERROR) {
-    printf("%s: %d\n", msg, err);
-  }
-}
 
 void display()
 {
@@ -427,6 +469,7 @@ int main(int argc, char **argv)
   glutIdleFunc( display );                  // register Idle Function
   glutKeyboardFunc( keyboard );               // register Keyboard Handler
   initialize();
+  obj.init();
   glutMainLoop();                       // run GLUT mainloop
   return 0;
 }
