@@ -345,7 +345,7 @@ void Model_OBJ::Draw()
 
 Model_OBJ obj;
 static float g_rotation = 0.0;
-static float g_rotationSpeed = -0.1;
+static float g_rotationSpeed = 0.1;
 static bool g_autoRotate = true;
 static float g_deltaY = 0.0;
 static float g_deltaX = 0.0;
@@ -374,7 +374,7 @@ void display()
   glMatrixMode(GL_MODELVIEW);
 
   glLoadIdentity();
-  gluLookAt( 0,0,4, 0,0,0, 0,-1,0);
+  gluLookAt( 0,0,4, 0,0,0, 0,1,0);
   glTranslatef(g_deltaX, g_deltaY, g_deltaZ);
   glRotatef(g_rotation,0,1,0);
   if (g_autoRotate) {
@@ -417,7 +417,7 @@ void setupLight1() {
   GLfloat ambient[] = { 0.01, 0.01, 0.01, 1.0 };
   GLfloat diffuse[] = { 0.1, 0.1, 0.2, 1 };
   GLfloat specular[] = { 0.0, 0.0, 0.0, 1 };
-  GLfloat position[] = { 0, 4.0, 0, 1.0 };
+  GLfloat position[] = { -2, 4.0, 0, 1.0 };
   glLightfv( GL_LIGHT1, GL_AMBIENT, ambient );
   glLightfv( GL_LIGHT1, GL_DIFFUSE, diffuse );
   glLightfv( GL_LIGHT1, GL_SPECULAR, specular );
@@ -486,16 +486,16 @@ void keyboard ( unsigned char key, int x, int y )
       win.field_of_view_angle += 0.4;
       break;
     case KEY_W:
-      g_deltaY += 0.01;
-      break;
-    case KEY_S:
       g_deltaY -= 0.01;
       break;
+    case KEY_S:
+      g_deltaY += 0.01;
+      break;
     case KEY_D:
-      g_deltaX += 0.01;
+      g_deltaX -= 0.01;
       break;
     case KEY_A:
-      g_deltaX -= 0.01;
+      g_deltaX += 0.01;
       break;
     case KEY_CAP_W:
       g_deltaZ += 0.05;
@@ -507,11 +507,11 @@ void keyboard ( unsigned char key, int x, int y )
       g_autoRotate = !g_autoRotate;
       break;
     case KEY_COMMA:
-      g_rotationSpeed += 0.1;
+      g_rotationSpeed -= 0.1;
       g_autoRotate = true;
       break;
     case KEY_DOT:
-      g_rotationSpeed -= 0.1;
+      g_rotationSpeed += 0.1;
       g_autoRotate = true;
       break;
     case KEY_ONE:
