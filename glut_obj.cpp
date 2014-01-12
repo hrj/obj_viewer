@@ -50,6 +50,8 @@
 #define KEY_CAP_S  83
 #define KEY_W      119
 #define KEY_S      115
+#define KEY_SQ_BL  91
+#define KEY_SQ_BR  93
 #define KEY_A      97
 #define KEY_D      100
 
@@ -345,7 +347,7 @@ void Model_OBJ::Draw()
 
 Model_OBJ obj;
 static float g_rotation = 0.0;
-static float g_rotationSpeed = 0.1;
+static float g_rotationSpeed = 0.05;
 static bool g_autoRotate = true;
 static float g_deltaY = 0.0;
 static float g_deltaX = 0.0;
@@ -362,6 +364,26 @@ static long g_timebase = 0;
 
 glutWindow win;
 
+typedef struct lightSetup_struct {
+  int id;
+  double angle, rotSpeed;
+  GLfloat pos[4];
+} lightSetup;
+
+lightSetup light0;
+
+void updateLight(lightSetup *light) {
+  light->angle += light->rotSpeed;
+  double s = sin(light->angle);
+  double c = cos(light->angle);
+  double x = light->pos[0];
+  double y = light->pos[1];
+  double l = sqrt(x*x + y*y);
+  light->pos[0] = l*c;
+  light->pos[1] = l*s;
+  glLightfv( light->id, GL_POSITION, light->pos );
+}
+
 void display()
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -374,12 +396,14 @@ void display()
   glMatrixMode(GL_MODELVIEW);
 
   glLoadIdentity();
-  gluLookAt( 0,0,4, 0,0,0, 0,1,0);
+  gluLookAt( 10,0,0, 0,0,0, 0,0,1);
   glTranslatef(g_deltaX, g_deltaY, g_deltaZ);
-  glRotatef(g_rotation,0,1,0);
+  glRotatef(g_rotation,0,0,1);
   if (g_autoRotate) {
     g_rotation += g_rotationSpeed;
   }
+  updateLight(&light0);
+
   obj.Draw();
 
   glutSwapBuffers();
@@ -402,22 +426,28 @@ void display()
 }
 
 void setupLight0() {
+  light0.id = GL_LIGHT0;
+  light0.rotSpeed = .0;
+  light0.pos[0] = -500.0;
+  light0.pos[1] = 0;
+  light0.pos[2] = 0;
+  light0.pos[3] = 1;
+
   glEnable(GL_LIGHT0);
   GLfloat ambient[] = { 0.01, 0.01, 0.01, 1.0 };
   GLfloat diffuse[] = { 0.8, 0.8, 0.8, 1 };
   GLfloat specular[] = { 0.0, 0.0, 0.0, 1 };
-  GLfloat position[] = { 4.0, 0.0, 0, 1.0 };
   glLightfv( GL_LIGHT0, GL_AMBIENT, ambient );
   glLightfv( GL_LIGHT0, GL_DIFFUSE, diffuse );
   glLightfv( GL_LIGHT0, GL_SPECULAR, specular );
-  glLightfv( GL_LIGHT0, GL_POSITION, position );
+  glLightfv( GL_LIGHT0, GL_POSITION, light0.pos );
 }
 
 void setupLight1() {
-  GLfloat ambient[] = { 0.01, 0.01, 0.01, 1.0 };
+  GLfloat ambient[] = { 0.00, 0.00, 0.00, 1.0 };
   GLfloat diffuse[] = { 0.1, 0.1, 0.2, 1 };
   GLfloat specular[] = { 0.0, 0.0, 0.0, 1 };
-  GLfloat position[] = { -2, 4.0, 0, 1.0 };
+  GLfloat position[] = { 500, 0, 300.0, 1.0 };
   glLightfv( GL_LIGHT1, GL_AMBIENT, ambient );
   glLightfv( GL_LIGHT1, GL_DIFFUSE, diffuse );
   glLightfv( GL_LIGHT1, GL_SPECULAR, specular );
@@ -425,10 +455,10 @@ void setupLight1() {
 }
 
 void setupLight2() {
-  GLfloat ambient[] = { 0.01, 0.01, 0.01, 1.0 };
+  GLfloat ambient[] = { 0.00, 0.00, 0.00, 1.0 };
   GLfloat diffuse[] = { 0.2, 0.1, 0.1, 1 };
   GLfloat specular[] = { 0.0, 0.0, 0.0, 1 };
-  GLfloat position[] = { 0.0, -4.0, 0, 1.0 };
+  GLfloat position[] = { -500.0, -300.0, 0, 1.0 };
   glLightfv( GL_LIGHT2, GL_AMBIENT, ambient );
   glLightfv( GL_LIGHT2, GL_DIFFUSE, diffuse );
   glLightfv( GL_LIGHT2, GL_SPECULAR, specular );
@@ -441,10 +471,6 @@ void initialize ()
   glEnable(GL_LIGHTING);
   GLfloat amb_light[] = { 0.01, 0.01, 0.02, 1.0 };
   glLightModelfv( GL_LIGHT_MODEL_AMBIENT, amb_light );
-
-  setupLight0();
-  setupLight1();
-  setupLight2();
 
   glShadeModel( GL_SMOOTH );
   glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
@@ -470,6 +496,10 @@ void initialize ()
   glLoadIdentity();
   gluLookAt( 0,1,4, 0,0,0, 0,1,0);
 
+  setupLight0();
+  setupLight1();
+  setupLight2();
+
   printError("after init");
 }
 
@@ -486,32 +516,32 @@ void keyboard ( unsigned char key, int x, int y )
       win.field_of_view_angle += 0.4;
       break;
     case KEY_W:
-      g_deltaY -= 0.01;
+      g_deltaZ -= 0.01;
       break;
     case KEY_S:
-      g_deltaY += 0.01;
+      g_deltaZ += 0.01;
       break;
     case KEY_D:
-      g_deltaX -= 0.01;
+      g_deltaY -= 0.01;
       break;
     case KEY_A:
-      g_deltaX += 0.01;
+      g_deltaY += 0.01;
       break;
     case KEY_CAP_W:
-      g_deltaZ += 0.05;
+      g_deltaX += 0.05;
       break;
     case KEY_CAP_S:
-      g_deltaZ -= 0.05;
+      g_deltaX -= 0.05;
       break;
     case KEY_SPACE:
       g_autoRotate = !g_autoRotate;
       break;
     case KEY_COMMA:
-      g_rotationSpeed -= 0.1;
+      g_rotationSpeed -= 0.05;
       g_autoRotate = true;
       break;
     case KEY_DOT:
-      g_rotationSpeed += 0.1;
+      g_rotationSpeed += 0.05;
       g_autoRotate = true;
       break;
     case KEY_ONE:
@@ -538,6 +568,12 @@ void keyboard ( unsigned char key, int x, int y )
         glDisable(GL_LIGHT2);
       }
       break;
+    case KEY_SQ_BL:
+      light0.rotSpeed += 0.01;
+      break;
+    case KEY_SQ_BR:
+      light0.rotSpeed -= 0.01;
+      break;
     default:
       printf("Key: %d\n", key);
       break;
@@ -550,7 +586,7 @@ int main(int argc, char **argv)
   win.width = 800;
   win.height = 800;
   win.title = "OpenGL/GLUT OBJ Loader.";
-  win.field_of_view_angle = 45;
+  win.field_of_view_angle = 20;
   win.z_near = 0.01f;
   win.z_far = 500.0f;
 
