@@ -519,10 +519,10 @@ void keyboard ( unsigned char key, int x, int y )
       win.field_of_view_angle += 0.4;
       break;
     case KEY_W:
-      g_deltaZ -= 0.01;
+      g_deltaZ -= 0.02;
       break;
     case KEY_S:
-      g_deltaZ += 0.01;
+      g_deltaZ += 0.02;
       break;
     case KEY_D:
       g_deltaY -= 0.01;
