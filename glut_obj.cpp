@@ -377,10 +377,10 @@ void updateLight(lightSetup *light) {
   double s = sin(light->angle);
   double c = cos(light->angle);
   double x = light->pos[0];
-  double y = light->pos[1];
-  double l = sqrt(x*x + y*y);
+  double z = light->pos[2];
+  double l = sqrt(x*x + z*z);
   light->pos[0] = l*c;
-  light->pos[1] = l*s;
+  light->pos[2] = l*s;
   glLightfv( light->id, GL_POSITION, light->pos );
 }
 
@@ -389,6 +389,7 @@ void display()
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   glMatrixMode(GL_PROJECTION);
+
   GLfloat aspect = (GLfloat) win.width / win.height;
   glLoadIdentity();
   gluPerspective(win.field_of_view_angle, aspect, win.z_near, win.z_far);
@@ -396,13 +397,13 @@ void display()
   glMatrixMode(GL_MODELVIEW);
 
   glLoadIdentity();
+  updateLight(&light0);
   gluLookAt( 10,0,0, 0,0,0, 0,0,1);
   glTranslatef(g_deltaX, g_deltaY, g_deltaZ);
   glRotatef(g_rotation,0,0,1);
   if (g_autoRotate) {
     g_rotation += g_rotationSpeed;
   }
-  updateLight(&light0);
 
   obj.Draw();
 
@@ -447,7 +448,7 @@ void setupLight1() {
   GLfloat ambient[] = { 0.00, 0.00, 0.00, 1.0 };
   GLfloat diffuse[] = { 0.1, 0.1, 0.2, 1 };
   GLfloat specular[] = { 0.0, 0.0, 0.0, 1 };
-  GLfloat position[] = { 500, 0, 300.0, 1.0 };
+  GLfloat position[] = { -500, 300.0, 0, 1.0 };
   glLightfv( GL_LIGHT1, GL_AMBIENT, ambient );
   glLightfv( GL_LIGHT1, GL_DIFFUSE, diffuse );
   glLightfv( GL_LIGHT1, GL_SPECULAR, specular );
@@ -493,12 +494,14 @@ void initialize ()
 #endif
 
   glMatrixMode(GL_MODELVIEW);
+
   glLoadIdentity();
-  gluLookAt( 0,1,4, 0,0,0, 0,1,0);
 
   setupLight0();
   setupLight1();
   setupLight2();
+
+  gluLookAt( 0,1,4, 0,0,0, 0,1,0);
 
   printError("after init");
 }
